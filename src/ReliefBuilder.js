@@ -11,6 +11,8 @@ class ReliefBuilder {
 
     // create the relief container
     this._reliefContainer = new THREE.Object3D()
+    this._reliefContainer.castShadow = true
+    this._reliefContainer.receiveShadow = true
     this._threeContext.getScene().add(this._reliefContainer)
 
     fileInput.addEventListener('change', function(e) {
@@ -54,6 +56,11 @@ class ReliefBuilder {
 
 
   createFromRaster(data, width, height) {
+    let min = +Infinity
+    let max = -Infinity
+    let avg = 
+
+
     // let that = this
     // removing the children of the container
     this._reliefContainer.children.forEach(c => this._reliefContainer.remove(c))
@@ -65,7 +72,7 @@ class ReliefBuilder {
     let nbPixels = width * height
 
     for(let i=0; i<nbPixels; i++){
-      vertices[i*3 + 2] = (data[i] - 32768) / 5 
+      vertices[i*3 + 2] = (data[i] - 32768) / 5
     }
 
     geometry.computeVertexNormals()
@@ -86,9 +93,9 @@ class ReliefBuilder {
     plane.receiveShadow = true
 
     console.log(plane)
-    plane.scale.x = 0.1
-    plane.scale.y = 0.1
-    plane.scale.z = 0.1
+    // plane.scale.x = 0.1
+    // plane.scale.y = 0.1
+    // plane.scale.z = 0.1
   }
 
 

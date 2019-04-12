@@ -47492,8 +47492,18 @@
 
 	    // adding some light
 	    const light1 = new DirectionalLight(0xffffff, 1);
-	    light1.position.set(-5000, 5000, 5000);
+	    light1.position.set(-1000, 1000, 1000);
 	    light1.castShadow = true;
+	    // light1.shadowCameraVisible = true;
+	    light1.shadow.mapSize.width = 1024;
+	    light1.shadow.mapSize.height = 1024;
+	    var d = 2000;
+	    light1.shadow.camera.left = -d;
+	    light1.shadow.camera.right = d;
+	    light1.shadow.camera.top = d;
+	    light1.shadow.camera.bottom = -d;
+	    light1.shadow.camera.far = 50000;
+
 	    console.log(light1);
 	    // adding the light to the camera ensure a constant lightin of the model
 	    this._scene.add(this._camera);
@@ -47503,10 +47513,9 @@
 	    this._renderer.setClearColor(0xffffff, 0);
 	    this._renderer.setPixelRatio(window.devicePixelRatio);
 	    this._renderer.setSize(divObj.clientWidth, divObj.clientHeight);
-	    this._renderer.gammaInput = true;
-	    this._renderer.gammaOutput = true;
-	    this._renderer.shadowMap.enabled = true;
-	    this._renderer.shadowMap.type = PCFSoftShadowMap; // default THREE.PCFShadowMap
+	    this._renderer.shadowMapEnabled = true;
+	    this._renderer.shadowMapType = PCFSoftShadowMap;
+	    this._renderer.shadowMapSoft = true;
 	    divObj.appendChild(this._renderer.domElement);
 
 	    // all the necessary for raycasting
@@ -76428,6 +76437,8 @@
 
 	    // create the relief container
 	    this._reliefContainer = new Object3D();
+	    this._reliefContainer.castShadow = true;
+	    this._reliefContainer.receiveShadow = true;
 	    this._threeContext.getScene().add(this._reliefContainer);
 
 	    fileInput.addEventListener('change', function(e) {
@@ -76469,6 +76480,9 @@
 
 
 	  createFromRaster(data, width, height) {
+	    let avg = 
+
+
 	    // let that = this
 	    // removing the children of the container
 	    this._reliefContainer.children.forEach(c => this._reliefContainer.remove(c));
@@ -76480,7 +76494,7 @@
 	    let nbPixels = width * height;
 
 	    for(let i=0; i<nbPixels; i++){
-	      vertices[i*3 + 2] = (data[i] - 32768) / 5; 
+	      vertices[i*3 + 2] = (data[i] - 32768) / 5;
 	    }
 
 	    geometry.computeVertexNormals();
@@ -76501,9 +76515,9 @@
 	    plane.receiveShadow = true;
 
 	    console.log(plane);
-	    plane.scale.x = 0.1;
-	    plane.scale.y = 0.1;
-	    plane.scale.z = 0.1;
+	    // plane.scale.x = 0.1
+	    // plane.scale.y = 0.1
+	    // plane.scale.z = 0.1
 	  }
 
 

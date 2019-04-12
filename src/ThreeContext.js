@@ -39,8 +39,18 @@ export class ThreeContext extends EventManager {
 
     // adding some light
     const light1 = new THREE.DirectionalLight(0xffffff, 1)
-    light1.position.set(-5000, 5000, 5000)
-    light1.castShadow = true
+    light1.position.set(-1000, 1000, 1000)
+    light1.castShadow = true;
+    // light1.shadowCameraVisible = true;
+    light1.shadow.mapSize.width = 1024;
+    light1.shadow.mapSize.height = 1024;
+    var d = 2000;
+    light1.shadow.camera.left = -d;
+    light1.shadow.camera.right = d;
+    light1.shadow.camera.top = d;
+    light1.shadow.camera.bottom = -d;
+    light1.shadow.camera.far = 50000;
+
     console.log(light1)
     // adding the light to the camera ensure a constant lightin of the model
     this._scene.add(this._camera)
@@ -50,10 +60,9 @@ export class ThreeContext extends EventManager {
     this._renderer.setClearColor(0xffffff, 0)
     this._renderer.setPixelRatio(window.devicePixelRatio)
     this._renderer.setSize(divObj.clientWidth, divObj.clientHeight)
-    this._renderer.gammaInput = true
-    this._renderer.gammaOutput = true
-    this._renderer.shadowMap.enabled = true;
-    this._renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
+    this._renderer.shadowMapEnabled = true;
+    this._renderer.shadowMapType = THREE.PCFSoftShadowMap;
+    this._renderer.shadowMapSoft = true;
     divObj.appendChild(this._renderer.domElement)
 
     // all the necessary for raycasting
