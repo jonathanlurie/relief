@@ -1,0 +1,67 @@
+{
+  "name": "relief",
+  "version": "0.1.14",
+  "description": "A starter for ThreeJS bundled with Rollup",
+  "repository": "jonathanlurie/relief",
+  "moduleName": "relief",
+  "main": "lib/relief.js",
+  "module": "es/relief.js",
+  "unpkg": "dist/relief.js",
+  "entry": "src/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -c",
+    "dev": "serve . & rollup -w -c",
+    "doc": "documentation build src/*.js -o ./doc/ -f html; documentation build src/*.js -f md > documentation.md",
+    "lint": "eslint src/*.js"
+  },
+  "author": "Jonathan Lurie",
+  "license": "MIT",
+  "devDependencies": {
+    "documentation": "^6.1.0",
+    "eslint": "^5.6.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "rollup": "^0.57.0",
+    "rollup-plugin-babel": "^3.0.2",
+    "rollup-plugin-commonjs": "^9.1.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-globals": "^1.1.0",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-terser": "^3.0.0",
+    "rollup-plugin-uglify": "^6.0.0",
+    "serve": "^10.1.1"
+  },
+  "dependencies": {
+    "filepuller": "^0.1.0",
+    "geotiff": "^1.0.0-beta.6",
+    "three": "^0.100.0"
+  },
+  "eslintConfig": {
+    "extends": "eslint-config-airbnb-base",
+    "rules": {
+      "semi": [
+        "error",
+        "never"
+      ],
+      "no-underscore-dangle": [
+        "off",
+        {
+          "allowAfterThis": true
+        }
+      ],
+      "max-len": [
+        "warn",
+        {
+          "code": 150
+        }
+      ],
+      "prefer-destructuring": [
+        "off"
+      ],
+      "no-param-reassign": [
+        "warn"
+      ]
+    }
+  }
+}
