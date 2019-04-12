@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import TrackballControls from './thirdparty/TrackballControls'
+import OrbitControls from './thirdparty/OrbitControls'
 // import Tools from './Tools'
 import EventManager from './EventManager'
 
@@ -32,37 +33,35 @@ export class ThreeContext extends EventManager {
 
     // init scene
     this._scene = new THREE.Scene()
-    this._scene.add(new THREE.AmbientLight(0x444444))
+    this._scene.add(new THREE.AmbientLight(0xffffff, 0.1))
 
     // let axesHelper = new THREE.AxesHelper( 1000 )
     // this._scene.add( axesHelper )
 
-    // adding some light
-    const light1 = new THREE.DirectionalLight(0xffffff, 1)
-    light1.position.set(-1000, 1000, 1000)
-    light1.castShadow = true;
-    // light1.shadowCameraVisible = true;
-    light1.shadow.mapSize.width = 1024;
-    light1.shadow.mapSize.height = 1024;
-    var d = 2000;
-    light1.shadow.camera.left = -d;
-    light1.shadow.camera.right = d;
-    light1.shadow.camera.top = d;
-    light1.shadow.camera.bottom = -d;
-    light1.shadow.camera.far = 50000;
 
-    console.log(light1)
+
+    let bulbLight = new THREE.PointLight( 0xffffff, 1, 0, 1 )
+    bulbLight.position.set( -1000, 500, -1000 )
+    this._scene.add( bulbLight )
+
+
+    let bulbLight2 = new THREE.PointLight( 0xffffff, 0.5, 0, 1 )
+    bulbLight2.position.set( 1000, 1000, 0 )
+    this._scene.add( bulbLight2 )
+
+
+    // alternatively
     // adding the light to the camera ensure a constant lightin of the model
-    this._scene.add(this._camera)
-    this._camera.add(light1)
+    //this._scene.add(this._camera)
+    //this._camera.add(light1)
 
     this._renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true })
     this._renderer.setClearColor(0xffffff, 0)
     this._renderer.setPixelRatio(window.devicePixelRatio)
     this._renderer.setSize(divObj.clientWidth, divObj.clientHeight)
-    this._renderer.shadowMapEnabled = true;
-    this._renderer.shadowMapType = THREE.PCFSoftShadowMap;
-    this._renderer.shadowMapSoft = true;
+    // this._renderer.shadowMapEnabled = true;
+    // this._renderer.shadowMapType = THREE.PCFSoftShadowMap;
+    // this._renderer.shadowMapSoft = true;
     divObj.appendChild(this._renderer.domElement)
 
     // all the necessary for raycasting
@@ -84,15 +83,15 @@ export class ThreeContext extends EventManager {
     }, false)
 
     // mouse controls
-    this._controls = new TrackballControls(this._camera, this._renderer.domElement)
-    this._controls.rotateSpeed = 10
+    this._controls = new OrbitControls(this._camera, this._renderer.domElement)
+    // this._controls.rotateSpeed = 10
     // this._controls.addEventListener('change', this._render.bind(this))
 
     window.addEventListener('resize', () => {
       that._camera.aspect = divObj.clientWidth / divObj.clientHeight
       that._camera.updateProjectionMatrix()
       that._renderer.setSize(divObj.clientWidth, divObj.clientHeight)
-      that._controls.handleResize()
+      // that._controls.handleResize()
       that._render()
     }, false)
 
@@ -108,6 +107,7 @@ export class ThreeContext extends EventManager {
     const geometry = new THREE.TorusKnotBufferGeometry(10, 3, 100, 16)
     const material = new THREE.MeshPhongMaterial({ color: Math.ceil(Math.random() * 0xffff00) })
     const torusKnot = new THREE.Mesh(geometry, material)
+    torusKnot.position.set(-500, 500, 500)
     this._scene.add(torusKnot)
     this._render()
   }

@@ -58,44 +58,51 @@ class ReliefBuilder {
   createFromRaster(data, width, height) {
     let min = +Infinity
     let max = -Infinity
-    let avg = 
+
+    for(let i=0; i<data.length; i++){
+      min = Math.min(min, data[i])
+      max = Math.max(max, data[i])
+    }
 
 
     // let that = this
     // removing the children of the container
     this._reliefContainer.children.forEach(c => this._reliefContainer.remove(c))
 
-    let geometry = new THREE.PlaneBufferGeometry(20*(width-1), 20*(height-1), width-1, height-1)
+    let geometry = new THREE.PlaneBufferGeometry(width-1, height-1, width-1, height-1)
 
     console.log(geometry)
     let vertices = geometry.attributes.position.array
     let nbPixels = width * height
 
     for(let i=0; i<nbPixels; i++){
-      vertices[i*3 + 2] = (data[i] - 32768) / 5
+      // For SRTM20
+      // vertices[i*3 + 2] = (data[i] - min) / 50
+
+
+      vertices[i*3 + 2] = (data[i] - min) * 1
     }
 
     geometry.computeVertexNormals()
 
 
     let material = new THREE.MeshPhongMaterial( {
-      color: 0x6666ff,
+      color: 0xe0e0e0, //0xe2cf95,
       side: THREE.DoubleSide,
+      shininess: 150,
       //wireframe: true
-      shadowSide: THREE.DoubleSide,
     })
 
 
     let plane = new THREE.Mesh( geometry, material )
     this._reliefContainer.add( plane )
 
-    plane.castShadow = true
-    plane.receiveShadow = true
+    // plane.castShadow = true
+    // plane.receiveShadow = true
 
     console.log(plane)
-    // plane.scale.x = 0.1
-    // plane.scale.y = 0.1
-    // plane.scale.z = 0.1
+
+    plane.rotateX(-Math.PI/2)
   }
 
 
