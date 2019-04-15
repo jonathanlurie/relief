@@ -11,15 +11,11 @@
 
 
     #cardholder {
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      margin: auto;
-      width: 100vw;
-      height: 100vh;
-      display: inline-flex;
+      position: fixed;
+      width: 3000px;
+      height: 3000px;
+      /* width: 100vw;
+      height: 100vh; */
     }
 
     #threedeediv {
@@ -31,10 +27,17 @@
     }
 
     #info {
-      position: absolute;
+      position: fixed;
       background: #FFFFFF80;
       padding: 5px;
       z-index: 1;
+    }
+
+    #img {
+      position: absolute;
+      z-index: 10;
+      width: 100px;
+      height: 100px;
     }
 
   </style>
@@ -51,6 +54,8 @@
     <div id="threedeediv"></div>
   </div>
 
+  <img id='img' src=''></img>
+
 
   <script>
     let fileInput = document.getElementById('fileInput')
@@ -60,6 +65,12 @@
     // threeContext.addSampleShape()
 
     let reliefBuilder = new relief.ReliefBuilder(fileInput, threeContext)
+
+    function takePicture(){
+      let imgData = threeContext.getSnapshotData()
+
+      document.getElementById('img').src = imgData
+    }
 
   </script>
 

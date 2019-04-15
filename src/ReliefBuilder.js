@@ -60,8 +60,15 @@ class ReliefBuilder {
     let max = -Infinity
 
     for(let i=0; i<data.length; i++){
+      // SRTM FIX: replacing nodata with 0
+      if(data[i] < 32768 ){
+        data[i] = 32768
+      }
+
       min = Math.min(min, data[i])
       max = Math.max(max, data[i])
+
+
     }
 
 
@@ -77,32 +84,75 @@ class ReliefBuilder {
 
     for(let i=0; i<nbPixels; i++){
       // For SRTM20
-      // vertices[i*3 + 2] = (data[i] - min) / 50
+      vertices[i*3 + 2] = (data[i] - min) / 100
 
-
-      vertices[i*3 + 2] = (data[i] - min) * 1
+      // for switzerland
+      // vertices[i*3 + 2] = (data[i] - min) / 2
     }
 
     geometry.computeVertexNormals()
 
-
-    let material = new THREE.MeshPhongMaterial( {
-      color: 0xe0e0e0, //0xe2cf95,
+    let material = new THREE.MeshBasicMaterial( {
+      color: 0x000000,//0xe0e0e0, //0xe2cf95,
       side: THREE.DoubleSide,
       shininess: 150,
-      //wireframe: true
+      // map: texture,
+      wireframe: true
     })
-
 
     let plane = new THREE.Mesh( geometry, material )
     this._reliefContainer.add( plane )
-
-    // plane.castShadow = true
-    // plane.receiveShadow = true
-
-    console.log(plane)
-
     plane.rotateX(-Math.PI/2)
+
+
+    /*
+    let that = this
+    // instantiate a loader
+    var loader = new THREE.TextureLoader();
+
+    // load a resource
+    loader.load(
+      // resource URL
+      '../data/pk10krel_2017_gobet2.png',
+
+      // onLoad callback
+      function ( texture ) {
+        // in this example we create the material when the texture is loaded
+
+
+         let material = new THREE.MeshPhongMaterial( {
+           color: 0xe0e0e0, //0xe2cf95,
+           side: THREE.DoubleSide,
+           shininess: 150,
+           // map: texture,
+           wireframe: true
+         })
+
+
+         let plane = new THREE.Mesh( geometry, material )
+         that._reliefContainer.add( plane )
+
+         // plane.castShadow = true
+         // plane.receiveShadow = true
+
+         console.log(plane)
+
+         plane.rotateX(-Math.PI/2)
+
+
+
+      },
+
+      // onProgress callback currently not supported
+      undefined,
+
+      // onError callback
+      function ( err ) {
+        console.error( 'An error happened.' );
+      }
+    );
+    */
+
   }
 
 

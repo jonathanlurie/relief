@@ -46923,11 +46923,11 @@
 	  // This option actually enables dollying in and out; left as "zoom" for backwards compatibility.
 	  // Set to false to disable zooming
 	  this.enableZoom = true;
-	  this.zoomSpeed = 1.0;
+	  this.zoomSpeed = 0.2;
 
 	  // Set to false to disable rotating
 	  this.enableRotate = true;
-	  this.rotateSpeed = 1.0;
+	  this.rotateSpeed = 0.2;
 
 	  // Set to false to disable panning
 	  this.enablePan = true;
@@ -47986,7 +47986,7 @@
 
 	    // init scene
 	    this._scene = new Scene();
-	    this._scene.add(new AmbientLight(0xffffff, 0.1));
+	    this._scene.add(new AmbientLight(0xffffff, 0.5));
 
 	    // let axesHelper = new THREE.AxesHelper( 1000 )
 	    // this._scene.add( axesHelper )
@@ -76984,8 +76984,15 @@
 	    let max = -Infinity;
 
 	    for(let i=0; i<data.length; i++){
+	      // SRTM FIX: replacing nodata with 0
+	      if(data[i] < 32768 ){
+	        data[i] = 32768;
+	      }
+
 	      min = Math.min(min, data[i]);
 	      max = Math.max(max, data[i]);
+
+
 	    }
 
 
@@ -77001,41 +77008,145 @@
 
 	    for(let i=0; i<nbPixels; i++){
 	      // For SRTM20
-	      // vertices[i*3 + 2] = (data[i] - min) / 50
+	      vertices[i*3 + 2] = (data[i] - min) / 100;
 
-
-	      vertices[i*3 + 2] = (data[i] - min) * 1;
+	      // for switzerland
+	      // vertices[i*3 + 2] = (data[i] - min) / 2
 	    }
 
 	    geometry.computeVertexNormals();
 
-
-	    let material = new MeshPhongMaterial( {
-	      color: 0xe0e0e0, //0xe2cf95,
+	    let material = new MeshBasicMaterial( {
+	      color: 0x000000,//0xe0e0e0, //0xe2cf95,
 	      side: DoubleSide,
 	      shininess: 150,
-	      //wireframe: true
+	      // map: texture,
+	      wireframe: true
 	    });
-
 
 	    let plane = new Mesh( geometry, material );
 	    this._reliefContainer.add( plane );
-
-	    // plane.castShadow = true
-	    // plane.receiveShadow = true
-
-	    console.log(plane);
-
 	    plane.rotateX(-Math.PI/2);
+
+
+	    /*
+	    let that = this
+	    // instantiate a loader
+	    var loader = new THREE.TextureLoader();
+
+	    // load a resource
+	    loader.load(
+	      // resource URL
+	      '../data/pk10krel_2017_gobet2.png',
+
+	      // onLoad callback
+	      function ( texture ) {
+	        // in this example we create the material when the texture is loaded
+
+
+	         let material = new THREE.MeshPhongMaterial( {
+	           color: 0xe0e0e0, //0xe2cf95,
+	           side: THREE.DoubleSide,
+	           shininess: 150,
+	           // map: texture,
+	           wireframe: true
+	         })
+
+
+	         let plane = new THREE.Mesh( geometry, material )
+	         that._reliefContainer.add( plane )
+
+	         // plane.castShadow = true
+	         // plane.receiveShadow = true
+
+	         console.log(plane)
+
+	         plane.rotateX(-Math.PI/2)
+
+
+
+	      },
+
+	      // onProgress callback currently not supported
+	      undefined,
+
+	      // onError callback
+	      function ( err ) {
+	        console.error( 'An error happened.' );
+	      }
+	    );
+	    */
+
 	  }
 
 
 
 	}
 
+	/* global document */
+
+	/**
+	* Some handy static functions to do stuff that are not strictly related to the business of the project
+	*/
+	class Tools {
+	  /**
+	   * Handy function to deal with option object we pass in argument of function.
+	   * Allows the return of a default value if the `optionName` is not available in
+	   * the `optionObj`
+	   * @param {Object} optionObj - the object that contain the options
+	   * @param {String} optionName - the name of the option desired, attribute of `optionObj`
+	   * @param {any} optionDefaultValue - default values to be returned in case `optionName` is not an attribute of `optionObj`
+	   */
+	  static getOption(optionObj, optionName, optionDefaultValue) {
+	    return (optionObj && optionName in optionObj) ? optionObj[optionName] : optionDefaultValue
+	  }
+
+
+	  /**
+	   * @private
+	   * Generate a cylinder with a starting point and en endpoint because
+	   * THREEjs does not provide that
+	   * @param {THREE.Vector3} vStart - the start position
+	   * @param {THREE.Vector3} vEnd - the end position
+	   * @param {Number} rStart - radius at the `vStart` position
+	   * @param {Number} rEnd - radius at the `vEnd` position
+	   * @param {Boolean} openEnd - cylinder has open ends if true, or closed ends if false
+	   * @return {THREE.CylinderBufferGeometry} the mesh containing a cylinder
+	   */
+	  static makeCylinder(vStart, vEnd, rStart, rEnd, openEnd) {
+	    const HALF_PI = Math.PI * 0.5;
+	    const distance = vStart.distanceTo(vEnd);
+	    const position = vEnd.clone().add(vStart).divideScalar(2);
+
+	    const offsetPosition = new Matrix4();// a matrix to fix pivot position
+	    offsetPosition.setPosition(position);
+
+	    const cylinder = new CylinderBufferGeometry(rStart, rEnd, distance, 32, 1, openEnd);
+	    const orientation = new Matrix4();// a new orientation matrix to offset pivot
+	    orientation.multiply(offsetPosition); // test to add offset
+	    const offsetRotation = new Matrix4();// a matrix to fix pivot rotation
+	    orientation.lookAt(vStart, vEnd, new Vector3(0, 1, 0));// look at destination
+	    offsetRotation.makeRotationX(HALF_PI);// rotate 90 degs on X
+	    orientation.multiply(offsetRotation);// combine orientation with rotation transformations
+	    cylinder.applyMatrix(orientation);
+	    return cylinder
+	  }
+
+
+	  static triggerDownload(strData, filename) {
+	    const link = document.createElement('a');
+	    document.body.appendChild(link); // Firefox requires the link to be in the body
+	    link.download = filename;
+	    link.href = strData;
+	    link.click();
+	    document.body.removeChild(link); // remove the link when done
+	  }
+	}
+
 	var main$1 = ({
 	  ThreeContext,
-	  ReliefBuilder
+	  ReliefBuilder,
+	  Tools
 	})
 
 	return main$1;

@@ -33,7 +33,7 @@ export class ThreeContext extends EventManager {
 
     // init scene
     this._scene = new THREE.Scene()
-    this._scene.add(new THREE.AmbientLight(0xffffff, 0.1))
+    this._scene.add(new THREE.AmbientLight(0xffffff, 0.5))
 
     // let axesHelper = new THREE.AxesHelper( 1000 )
     // this._scene.add( axesHelper )
